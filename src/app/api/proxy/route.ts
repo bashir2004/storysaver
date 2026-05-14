@@ -33,9 +33,8 @@ function isAllowedUrl(raw: string): boolean {
 }
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
-  // Prefer req.ip (set by Next.js from the TCP connection), then forwarded header
+  // Prefer forwarded headers (req.ip was removed in Next.js 15+)
   const ip =
-    req.ip ??
     req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
     req.headers.get("x-real-ip") ??
     "unknown";
