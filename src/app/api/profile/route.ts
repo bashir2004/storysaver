@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { fetchProfileData, InstagramNotFoundError } from "@/lib/instagram";
+import { fetchProfileData, InstagramNotFoundError, InstagramAuthError } from "@/lib/instagram";
 import { checkRateLimit } from "@/lib/rateLimit";
 import { ApiResponse, ProfileData } from "@/types/instagram";
 
@@ -33,6 +33,13 @@ export async function GET(req: NextRequest): Promise<NextResponse<ApiResponse<Pr
       return NextResponse.json(
         { ok: false, error: error.message ?? "Private account.", code: "PRIVATE_ACCOUNT" },
         { status: 403 }
+      );
+    }
+
+    if (err instanceof InstagramAuthError) {
+      return NextResponse.json(
+        { ok: false, error: "Instagram session required. Configure INSTAGRAM_SESSION_ID in environment variables.", code: "AUTH_REQUIRED" },
+        { status: 401 }
       );
     }
 
