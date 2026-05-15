@@ -20,7 +20,10 @@ export interface SessionData {
   expired: boolean;
 }
 
-const SESSION_FILE = path.join(process.cwd(), ".session.json");
+// Vercel's project root is read-only; only /tmp is writable at runtime
+const SESSION_FILE = process.env.VERCEL
+  ? "/tmp/.session.json"
+  : path.join(process.cwd(), ".session.json");
 
 // In-memory cache — avoids hitting disk on every request
 let cache: SessionData | null = null;
