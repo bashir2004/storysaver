@@ -69,7 +69,7 @@ export interface ApiSuccess<T> {
 export interface ApiError {
   ok: false;
   error: string;
-  code?: "PRIVATE_ACCOUNT" | "NOT_FOUND" | "RATE_LIMITED" | "FETCH_ERROR";
+  code?: "PRIVATE_ACCOUNT" | "NOT_FOUND" | "RATE_LIMITED" | "FETCH_ERROR" | "AUTH_REQUIRED";
 }
 
 export type ApiResponse<T> = ApiSuccess<T> | ApiError;
