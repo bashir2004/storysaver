@@ -127,13 +127,18 @@ async function igFetch<T>(
     const axiosErr = err as AxiosError;
     const status = axiosErr.response?.status;
 
-    if (status === 401 || status === 403) {
-      // Mark the stored session as expired so the admin UI reflects it
-      markExpired();
+    if (status === 400 || status === 401 || status === 403) {
+      // Instagram returns 400 from datacenter IPs when no auth is present,
+      // 401/403 when a session is present but invalid/expired.
+      if (status === 401 || status === 403) markExpired();
       throw new InstagramAuthError();
     }
     if (status === 404) {
       throw new InstagramNotFoundError(url);
+    }
+    // Surface the HTTP status in the error message for easier debugging
+    if (status) {
+      throw Object.assign(new Error(`Instagram API returned HTTP ${status}`), { igStatus: status });
     }
     throw err;
   }

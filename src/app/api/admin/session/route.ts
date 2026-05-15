@@ -41,15 +41,16 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
   }
 
-  const sessionId = (body.sessionId ?? "").trim();
+  // URL-decode values in case the user copies them from the browser URL bar or DevTools network tab
+  const sessionId = decodeURIComponent((body.sessionId ?? "").trim());
   if (!sessionId) {
     return NextResponse.json({ error: "sessionId is required" }, { status: 400 });
   }
 
   saveSession({
     sessionId,
-    csrfToken: (body.csrfToken ?? "").trim(),
-    dsUserId: (body.dsUserId ?? "").trim(),
+    csrfToken: decodeURIComponent((body.csrfToken ?? "").trim()),
+    dsUserId: decodeURIComponent((body.dsUserId ?? "").trim()),
   });
 
   return NextResponse.json({ ok: true, status: getSessionStatus() });

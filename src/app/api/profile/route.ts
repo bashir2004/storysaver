@@ -50,7 +50,8 @@ export async function GET(req: NextRequest): Promise<NextResponse<ApiResponse<Pr
       );
     }
 
-    console.error("[/api/profile] Unhandled error:", error);
+    const igStatus = (error as { igStatus?: number }).igStatus;
+    console.error(`[/api/profile] Unhandled error (igStatus=${igStatus ?? 'n/a'}):`, error);
     return NextResponse.json(
       { ok: false, error: "Failed to fetch profile data. Instagram may be blocking the request.", code: "FETCH_ERROR" },
       { status: 500 }

@@ -65,8 +65,8 @@ export function getSession(): SessionData | null {
     return fromFile;
   }
 
-  // Fall back to environment variables
-  const sessionId = process.env.INSTAGRAM_SESSION_ID?.trim() ?? "";
+  // Fall back to environment variables (URL-decode in case copied from browser)
+  const sessionId = decodeURIComponent(process.env.INSTAGRAM_SESSION_ID?.trim() ?? "");
   if (!sessionId) {
     cache = null;
     return null;
@@ -74,8 +74,8 @@ export function getSession(): SessionData | null {
 
   const fromEnv: SessionData = {
     sessionId,
-    csrfToken: process.env.INSTAGRAM_CSRFTOKEN?.trim() ?? "",
-    dsUserId: process.env.INSTAGRAM_DS_USER_ID?.trim() ?? "",
+    csrfToken: decodeURIComponent(process.env.INSTAGRAM_CSRFTOKEN?.trim() ?? ""),
+    dsUserId: decodeURIComponent(process.env.INSTAGRAM_DS_USER_ID?.trim() ?? ""),
     updatedAt: 0,
     expired: false,
   };
