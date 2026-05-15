@@ -50,10 +50,23 @@ export async function GET(req: NextRequest): Promise<NextResponse<ApiResponse<Pr
       );
     }
 
-    const igStatus = (error as { igStatus?: number }).igStatus;
-    console.error(`[/api/profile] Unhandled error (igStatus=${igStatus ?? 'n/a'}):`, error);
+    const igStatus = (error as { igStatus?: number | string }).igStatus;
+    console.error(`[/api/profile] username=${username} igStatus=${igStatus ?? 'n/a'} message=${error.message ?? 'none'}`);
+
+    if (igStatus === 429) {
+      return NextResponse.json(
+        { ok: false, error: "Instagram is rate limiting requests. Please try again in a few minutes.", code: "RATE_LIMITED" } satisfies ApiError,
+        { status: 429 }
+      );
+    }
+    if (igStatus === 'timeout') {
+      return NextResponse.json(
+        { ok: false, error: "Instagram took too long to respond. Please try again.", code: "FETCH_ERROR" } satisfies ApiError,
+        { status: 504 }
+      );
+    }
     return NextResponse.json(
-      { ok: false, error: "Failed to fetch profile data. Instagram may be blocking the request.", code: "FETCH_ERROR" },
+      { ok: false, error: `Failed to fetch profile data. Instagram may be blocking the request. (${igStatus ?? error.message ?? 'unknown'})`, code: "FETCH_ERROR" } satisfies ApiError,
       { status: 500 }
     );
   }
